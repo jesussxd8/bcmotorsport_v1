@@ -2,8 +2,8 @@
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 let lang='es';try{lang=localStorage.getItem('bc-language')==='en'?'en':'es'}catch{}
 const t=(es,en)=>lang==='es'?es:en;
-const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-let settings={...(window.BC_CONFIG||{})},step=0,requestId=crypto.randomUUID(),sending=false,galleryIndex=0,motionPaused=reduce;
+const reduce=false; // Motion is enabled by default; visitors can pause it with the on-page control.
+let settings={...(window.BC_CONFIG||{})},step=0,requestId=crypto.randomUUID(),sending=false,galleryIndex=0,motionPaused=false;
 const statusNames={received:['Recibida','Received'],confirmed:['Confirmada','Confirmed'],in_progress:['En proceso','In progress'],ready:['Lista para recoger','Ready for collection'],completed:['Completada','Completed'],cancelled:['Cancelada','Cancelled']};
 const serviceNames={'Detailing Premium':['Detailing Premium','Premium Detailing'],'Mecánica Avanzada':['Mecánica avanzada','Advanced mechanics'],'Restauración de Faros':['Restauración de faros','Headlight restoration'],'Suspensión y Llantas':['Suspensión y llantas','Suspension & wheels']};
 const serviceLabel=s=>serviceNames[s]?.[lang==='es'?0:1]||s;
@@ -51,13 +51,13 @@ function ignition(replay=false){
   const resources=['work/logo.webp','work/ibiza_limpio.webp','work/motor_limpio3.webp'];
   let complete=0,resourcesDone=false,shown=0,lastStage=-1;const started=performance.now();
   Promise.all(resources.map(src=>new Promise(resolve=>{const img=new Image();const done=()=>{complete++;resolve()};img.onload=done;img.onerror=done;img.src=src}))).then(()=>{resourcesDone=true});
-  const hardStop=setTimeout(()=>finishLoader(run),3200);
+  const hardStop=setTimeout(()=>finishLoader(run),3600);
   function frame(now){
     if(run!==loaderRun||!$('#preloader')){clearTimeout(hardStop);return}
     const elapsed=now-started;
     const resourcePart=(complete/resources.length)*.24;
-    const timePart=Math.min(elapsed/1150,1)*.68;
-    const target=resourcesDone&&elapsed>850?1:Math.min(.94,.04+resourcePart+timePart);
+    const timePart=Math.min(elapsed/1450,1)*.68;
+    const target=resourcesDone&&elapsed>1450?1:Math.min(.94,.04+resourcePart+timePart);
     shown+=(target-shown)*.105;if(target===1&&shown>.985)shown=1;
     loader.style.setProperty('--loaded',shown.toFixed(4));
     const value=loader.querySelector('#rpm');if(value)value.textContent=String(Math.min(100,Math.round(shown*100))).padStart(2,'0');
